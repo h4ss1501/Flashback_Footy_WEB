@@ -175,3 +175,15 @@ def get_top_four(year):
     result = cursor.fetchall()
     return result
 
+def get_attendance_host(year):
+    query="""
+    SELECT Country, Year, Winner, Attendance 
+    FROM WorldCups
+    WHERE Year = ?
+    """
+
+    cursor.execute(query, (year,))
+    result = cursor.fetchall()
+    return result
+
+print(get_attendance_host('1930'))
