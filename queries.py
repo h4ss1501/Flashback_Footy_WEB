@@ -142,12 +142,23 @@ def get_search(date, player, tournament):
     FROM goalscorers gs
     JOIN fifa_wc_matches fwm ON fwm.date = gs.date
     WHERE gs.own_goal = 'FALSE'
-    AND (strftime('%Y', date) ? OR ? IS NULL)
-    AND (tournament = ? OR ? IS NULL)
-    AND (player = ? OR ? IS NULL)
     """
 
-    cursor.execute(query, (date, tournament, player))
+    params = []
+    
+    if date:
+        query += " AND strftime('%Y', gs.date) LIKE ?"
+        params.append(f"%{date}%")
+    
+    if player:
+        query += " AND gs.scorer LIKE ?"
+        params.append(f"%{player}%")
+    
+    if tournament:
+        query += " AND fwm.tournament LIKE ?"
+        params.append(f"%{tournament}%")
+    
+    cursor.execute(query, params)
     result = cursor.fetchall()
     return result
 
@@ -164,4 +175,3 @@ def get_top_four(year):
     result = cursor.fetchall()
     return result
 
-print(get_top_four('1930'))
